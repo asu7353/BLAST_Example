@@ -3,11 +3,10 @@ from werkzeug.utils import secure_filename
 from Bio.Blast import NCBIWWW, NCBIXML
 from Bio import SeqIO
 
-E_VALUE_THRESH = 0.04
-
 app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "data/"
+E_VALUE_THRESH = 0.04
 
 @app.route('/')
 def index():
