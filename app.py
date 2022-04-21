@@ -16,28 +16,28 @@ def index():
 def form():
 	#takes text sequence and puts it in to input.fasta
 	if(request.form["submitButton"] == "text"):
-		filename = "input.fasta"
+		filename = app.config['UPLOAD_FOLDER'] + "input.fasta"
 		sequence = request.form.get("sequence")
-		fasta_file = open(app.config['UPLOAD_FOLDER'] + filename,"a+")
+		fasta_file = open(filename,"a+")
 		fasta_file.truncate(0)
 		fasta_file.write(sequence)
 		fasta_file.close()
 	#check file input FASTA format
 	elif(request.form["submitButton"] == "file"):
 		fileInput = request.files["file"]
-		filename = secure_filename(fileInput.filename)
+		filename = app.config['UPLOAD_FOLDER'] + secure_filename(fileInput.filename)
 		if('.' in filename and filename.rsplit('.', 1)[1] != "fasta"):
 			error_statement = "File not in FASTA format"
 			return render_template("index.html", error_statement=error_statement)
-		fileInput.save(app.config['UPLOAD_FOLDER'] + filename)
+		fileInput.save(filename)
 	
 	#check if input is in FASTA format	
-	if(is_fasta(app.config['UPLOAD_FOLDER'] + filename) == False):
+	if(is_fasta(filename) == False):
 			error_statement = "Data not in FASTA format"
 			return render_template("index.html", error_statement=error_statement)
 
 	#parse result and read alignments into array to display on table
-	record = SeqIO.read(app.config['UPLOAD_FOLDER'] + filename, format="fasta")
+	record = SeqIO.read(filename, format="fasta")
 	result_handle = NCBIWWW.qblast("blastn", "nt", record.seq)
 	blast_record = NCBIXML.read(result_handle)
 	alignArray = []
@@ -54,7 +54,7 @@ def is_fasta(filename):
     with open(filename, "r") as handle:
         fasta = SeqIO.parse(handle, "fasta")
         return any(fasta)  # False when `fasta` is empty, i.e. wasn't a FASTA file
-        
+
 #object to store alignment data
 class AlignObject:
 	def __init__(obj, title, length, score, gaps, expect):
