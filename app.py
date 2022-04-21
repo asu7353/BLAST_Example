@@ -33,8 +33,8 @@ def form():
 	
 	#check if input is in FASTA format	
 	if(is_fasta(filename) == False):
-			error_statement = "Data not in FASTA format"
-			return render_template("index.html", error_statement=error_statement)
+		error_statement = "Data not in FASTA format"
+		return render_template("index.html", error_statement=error_statement)
 
 	#parse result and read alignments into array to display on table
 	record = SeqIO.read(filename, format="fasta")
